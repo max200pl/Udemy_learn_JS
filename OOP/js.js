@@ -15,6 +15,8 @@ const Person = function (firstName, birthYear) {
 	}; */
 }
 
+/* ========  How using prototype inheritance =========== */
+
 const jonas = new Person("Jonas", 1991);
 const matilda = new Person('Matilda', 2017); // create instance Person class
 const jack = new Person('Jack', 1975)
@@ -44,3 +46,28 @@ console.log(jonas.species, matilda.species);
 
 console.log(jonas.hasOwnProperty('firstName'));
 console.log(jonas.hasOwnProperty('species'));
+
+console.log(jonas.__proto__); // Object.prototype (top of prototype chain) 
+console.log(jonas.__proto__.__proto__);
+console.log(jonas.__proto__.__proto__.__proto__); // null
+// So that's because object.prototype is usually the top of the scope chain
+
+console.dir(Person.prototype.constructor);
+
+const arr = [1, 3, 5, 67, 8, 9, 9, 3]; // new Array === []
+// Is is indeed created by the array constructor
+// So essentially array === object 
+// Array.prototype.filter()
+console.log(arr.__proto__ === Array.prototype); // true
+
+Array.prototype.unique = function () {
+	return [...new Set(this)];
+}
+
+console.log(arr.unique()); // added new method in prototype in Array object // bad idea
+
+
+const h1 = document.querySelector("h1")
+console.dir(h1);
+
+console.dir(X => x + 1)
