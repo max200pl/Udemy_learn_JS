@@ -14,6 +14,7 @@ class PersonCL { // is actually a class declaration
 		this.birthYear = birthYear;
 	}
 	// Method will be added to .prototype property
+	// Instance method 
 	calcAge() {
 		console.log(2037 - this.birthYear);
 	}
@@ -31,6 +32,13 @@ class PersonCL { // is actually a class declaration
 	get fullName() {
 		return this._fullName;
 	}
+
+
+	//static method 
+	static hey() {
+		console.log("Hey there");
+		console.log(this);
+	}
 }
 
 const jessica = new PersonCL("Jessica Dvandva", 1996);
@@ -47,4 +55,6 @@ PersonCL.prototype.greet = function () {
 jessica.greet()
 
 const walter = new PersonCL("Walter White", 2021);
+
+PersonCL.hey();
 
