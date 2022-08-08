@@ -11,6 +11,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class Workout {
 	date = new Date();
 	id = (Date.now() + '').slice(-10);
+	clicks = 0;
 
 	constructor(coords, distance, duration) {
 		this.coords = coords; // [lat, lng]
@@ -22,6 +23,11 @@ class Workout {
 		const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 		this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${months[this.date.getMonth()]
 			} ${this.date.getDate()}`;
+	}
+
+	click() {
+		this.clicks++;
+		console.log(this.clicks);
 	}
 }
 
@@ -59,13 +65,14 @@ class Cycling extends Workout {
 	}
 }
 
-const run1 = new Running([29, -12], 5.2, 23, 178);
-const cycling1 = new Cycling([29, -12], 23, 95, 522);
+/* const run1 = new Running([29, -12], 5.2, 23, 178);
+const cycling1 = new Cycling([29, -12], 23, 95, 522); */
 
 
 //APPLICATION ARCHITECTURE
 class App {
 	#map;
+	#mapZoomLevel = 22;
 	#mapEvent;
 	#workouts = [];
 
@@ -73,6 +80,7 @@ class App {
 		this._getPosition();
 		form?.addEventListener('submit', this._newWorkout.bind(this)); // event listener this -> form 
 		inputType?.addEventListener('change', this._toggleElevationField);
+		containerWorkouts?.addEventListener('click', this._moveToPopup.bind(this));
 	}
 
 	_getPosition() {
@@ -92,7 +100,7 @@ class App {
 		console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
 
 		const coords = [latitude, longitude]
-		this.#map = L.map('map').setView(coords, 22);
+		this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
 
 		L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -199,7 +207,7 @@ class App {
 
 	_renderWorkout(workout) {
 		let html = `
-			<li class="workout workout--${workout.type}" data - id="${workout.id}" >
+			<li class="workout workout--${workout.type}" data-id="${workout.id}" >
 				<h2 class="workout__title">${workout.description}</h2>
 				<div class="workout__details">
 					<span class="workout__icon">
@@ -248,6 +256,28 @@ class App {
 
 			form?.insertAdjacentHTML('afterend', html) // added sibling element to end of the form 
 		}
+	}
+
+	_moveToPopup(e) {
+		const workoutEL = e.target.closest('.workout') // When click this element and his child get event click.
+
+
+		if (!workoutEL) return;
+		console.log(this.#workouts, "this.#workouts");
+		const workout = this.#workouts.find(work => work.id === workoutEL.dataset.id)
+		console.log(workout);
+
+
+		this.#map.setView(workout.coords, this.#mapZoomLevel, {
+			animate: true,
+			pan: {
+				duration: 1
+			}
+		})
+
+		// using this public interface;
+
+		workout.click();
 	}
 
 }
