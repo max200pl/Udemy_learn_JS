@@ -56,5 +56,45 @@ const getCountryDataAndNeighbour = function (country) {
 
 
 // getCountryDataAndNeighbour('portugal');
-getCountryDataAndNeighbour('usa');
+/* getCountryDataAndNeighbour('usa'); */
+
+
+///////////////////////////////////////
+/**
+ * USING FETCH API
+ */
+
+/* //  const request = new XMLHttpRequest();
+//  request.open('GET', `https://restcountries.com/v2/name/${country}`);
+//  request.send()
+
+
+const request = fetch("https://restcountries.com/v2/name/portugal"); // return promise  
+console.log(request); */
+
+
+/* const getCountryData = function (country) {
+    // beginning promise is still pending
+    // getting the data, still running in the background
+    fetch(`https://restcountries.com/v2/name/${country}`)
+        .then(function (response) { // get fullfil promise  
+            console.log(response);
+            return response.json(); // .json() return new promise 
+        })
+        .then(function (data) {
+            console.log(data);
+            renderCountry(data[0])
+        })
+} */
+
+const getCountryData = function (country) {
+    // beginning promise is still pending
+    // getting the data, still running in the background
+    fetch(`https://restcountries.com/v2/name/${country}`)
+        .then((response) => response.json())
+        .then((data) => renderCountry(data[0])
+}
+
+getCountryData("portugal");
+
 
