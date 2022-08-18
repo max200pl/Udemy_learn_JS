@@ -92,8 +92,18 @@ const getCountryData = function (country) {
     // getting the data, still running in the background
     fetch(`https://restcountries.com/v2/name/${country}`)
         .then((response) => response.json())
-        .then((data) => renderCountry(data[0])
+        .then((data) => {
+            renderCountry(data[0])
+            const neighbour = data[0].borders?.[0];
+            if (!neighbour) return;
+
+            // country 2 
+            return fetch(`https://restcountries.com/v2/alpha/${neighbour}`)
+        })
+        .then(response => response?.json())//.then(data => alert(data)) //this data receive when promise fulfilled
+        .then(data => renderCountry(data, 'neighbour'));
 }
+
 
 getCountryData("portugal");
 
