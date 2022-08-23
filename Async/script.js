@@ -3,7 +3,6 @@
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
-///////////////////////////////////////
 
 const renderCountry = function (data, className = '') {
     const html = `
@@ -20,7 +19,13 @@ const renderCountry = function (data, className = '') {
     `;
 
     countriesContainer?.insertAdjacentHTML("beforeend", html);
-    countriesContainer.style.opacity = 1;
+    // countriesContainer.style.opacity = 1;
+}
+
+const renderErr = function (msg) {
+    countriesContainer?.insertAdjacentText("beforeend", msg);
+
+    // countriesContainer.style.opacity = 1;
 }
 
 const getCountryDataAndNeighbour = function (country) {
@@ -87,24 +92,87 @@ console.log(request); */
         })
 } */
 
-const getCountryData = function (country) {
+
+
+/* const getCountryData = function (country) {
     // beginning promise is still pending
     // getting the data, still running in the background
     fetch(`https://restcountries.com/v2/name/${country}`)
-        .then((response) => response.json())
+        .then((response) => {//, error => alert(error))  // if error chain stop this
+            console.log(response);
+            if (!response.ok)
+                throw new Error(`Country not found ${response.status}`); // Create the new error 
+        })
+        //! called when promise fulfilled
         .then((data) => {
             renderCountry(data[0])
-            const neighbour = data[0].borders?.[0];
+            // const neighbour = data[0].borders?.[0];
+
+            const neighbour = "adsadas"
             if (!neighbour) return;
 
             // country 2 
             return fetch(`https://restcountries.com/v2/alpha/${neighbour}`)
         })
-        .then(response => response?.json())//.then(data => alert(data)) //this data receive when promise fulfilled
-        .then(data => renderCountry(data, 'neighbour'));
+        .then(response => { // , error => alert(error)-> using global catch error 
+            if (!response.ok)
+                throw new Error(`Country not found ${response.status}`);
+            response?.json()
+        })
+        .then(data => renderCountry(data, 'neighbour'))
+        .catch(error => { //! called when promise rejected
+            // will catch any errors that occur in any place in this whole promise chain
+            console.error(`${error} - this error`)
+            renderErr(`Something went wrong ${error.message}. Try again!`) // 
+        }) //return promise
+        .finally(() => { //!called no matter the result of the promise.
+            // spiner 
+            countriesContainer.style.opacity = 1;
+        })
+} */
+
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+    return (
+        fetch(url).then(response => {
+            if (!response.ok)
+                throw new Error(`${errorMsg} ${response.status}`); // Create the new error 
+
+            return response.json();
+        })
+    )
+}
+
+const getCountryData = function (country) {
+    // beginning promise is still pending
+    // getting the data, still running in the background
+
+    getJSON(`https://restcountries.com/v2/name/${country}`, 'Country not found')
+        .then((data) => {
+            renderCountry(data[0])
+            const neighbour = data[0].borders?.[0];
+
+            if (!neighbour) throw new Error('No neighbour found!');
+
+            // country 2 
+            return getJSON(`https://restcountries.com/v2/alpha/${neighbour}`, 'Country not found')
+        })
+
+        .then(data => renderCountry(data, 'neighbour'))
+        .catch(error => { //! called when promise rejected
+            // will catch any errors that occur in any place in this whole promise chain
+            console.error(`${error} - this error`)
+            renderErr(`Something went wrong ${error.message}. Try again!`) // 
+        }) //return promise
+        .finally(() => { //!called no matter the result of the promise.
+            // spiner 
+            countriesContainer.style.opacity = 1;
+        })
 }
 
 
-getCountryData("portugal");
 
+btn?.addEventListener('click', function () {
+    getCountryData("portugal")
+})
 
+getCountryData('australia')
